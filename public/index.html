@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Magazzino Supermercato</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Pannello Gestione Magazzino</h1>
+        <p>Benvenuto nel sistema di controllo interno.</p>
+        
+        <div class="dashboard">
+            <div class="card">
+                <h3>Visualizza Inventario</h3>
+                <p>Mostra i dati grezzi attualmente salvati nel database JSON.</p>
+                <a href="/prodotti" class="btn">Visualizza JSON</a>
+            </div>
+            
+            <div class="card">
+                <h3>Esporta in Excel</h3>
+                <p>Scarica il magazzino in formato CSV (delimitato da punto e virgola).</p>
+                <a href="/esporta-csv" class="btn btn-csv">Scarica .CSV</a>
+            </div>
+
+            <div class="card">
+                <h3>Importazione Carico</h3>
+                <p>Carica nuovi articoli elaborando il file XML presente sul server.</p>
+                <form action="/importa-xml" method="POST">
+                    <button type="submit" class="btn btn-xml">Esegui Import XML</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

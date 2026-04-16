@@ -1,11 +1,11 @@
-"codice";"descrizione";"reparto";"prezzo";"scorta"
-800789;Biscotti Frollini 700g;Colazione;2.50;45
-800999;Passata di Pomodoro 700g;Alimentari;0.95;200
-800111;Sale Marino Integrale 1kg;Alimentari;0.60;100
-800222;Farina Tipo 00 1kg;Alimentari;0.85;150
-800333;Confettura Albicocche 300g;Colazione;2.10;40
-800444;Tonno all'olio di oliva 3x80g;Inscatolati;3.50;60
-800555;Succo d'Arancia 1L;Bevande;1.80;55
-800666;Carta Igienica 4 rotoli;Igiene;2.40;100
-800777;Sapone Liquido Mani 500ml;Igiene;1.20;35
-800888;Legumi in scatola - Ceci 400g;Inscatolati;0.75;90
+codice,descrizione,reparto,prezzo,scorta
+800789,Biscotti Frollini 700g,Colazione,2.50,45
+800999,Passata di Pomodoro 700g,Alimentari,0.95,200
+800111,Sale Marino Integrale 1kg,Alimentari,0.60,100
+800222,Farina Tipo 00 1kg,Alimentari,0.85,150
+800333,Confettura Albicocche 300g,Colazione,2.10,40
+800444,Tonno all'olio di oliva 3x80g,Inscatolati,3.50,60
+800555,Succo d'Arancia 1L,Bevande,1.80,55
+800666,Carta Igienica 4 rotoli,Igiene,2.40,100
+800777,Sapone Liquido Mani 500ml,Igiene,1.20,35
+800888,Legumi in scatola - Ceci 400g,Inscatolati,0.75,90
