@@ -2,54 +2,75 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Movie Explorer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock M</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app-wrapper">
         <header>
-            <h1>🎬 Movie Explorer</h1>
-            <p id="info">Recupero dati dal server</p>
+            <h1>Magazzino Alimentare</h1>
+            <p id="info">Caricamento prodotti in corso...</p>
         </header>
         
         <div id="grid" class="movie-grid"></div>
     </div>
 
     <script>
-        // Funzione asincrona per scaricare i dati dall'API del server
-        async function getMovies() {
-            // Chiamata HTTP al nostro server
-            const res = await fetch('/api/film');
-            // Trasformiamo la risposta grezza in un array di oggetti
-            const movies = await res.json();
-            
-            // Aggiorniamo il sottotitolo con il numero totale di film
-            document.getElementById('info').innerText = `${movies.length} titoli caricati`;
-            
-            const grid = document.getElementById('grid');
-            
-            // Cicliamo su ogni film ricevuto
-            movies.forEach(m => {
-                // Creiamo un elemento "div" per ogni film (la nostra card)
-                const card = document.createElement('div');
-                // Assegniamo la classe generale e quella specifica del formato (per il colore)
-                card.className = `card ${m.tipo.toLowerCase()}`;
+        //FUNZIONE ASINCRONA: getInventory
+        //Scopo: Recuperare i dati dal server e costruire l'interfaccia grafica.
+        //Utilizza 'async' perché deve attendere una risposta dalla rete (operazione non istantanea).
+        async function getInventory() {
+            try {
+                //1. FETCH: Effettua una richiesta HTTP GET verso l'endpoint del server
+                const res = await fetch('/api/magazzino');
                 
-                // Inseriamo il contenuto HTML dentro la card
-                card.innerHTML = `
-                    <div class="content">
-                        <h3>${m.titolo}</h3>
-                        <p>Regia: ${m.regista}</p>
-                    </div>
-                    <span class="source">${m.tipo}</span>
-                `;
-                // Aggiungiamo la card alla griglia visibile
-                grid.appendChild(card);
-            });
+                //2. PARSING: Converte la risposta grezza del server in un array di oggetti JavaScript
+                const items = await res.json();
+                
+                //3. AGGIORNAMENTO UI: Modifica il testo nell'header con il numero totale di prodotti
+                document.getElementById('info').innerText = `${items.length} articoli totali monitorati`;
+                
+                const grid = document.getElementById('grid');
+                grid.innerHTML = ''; //Svuota la griglia per evitare duplicati in caso di ricaricamento
+                
+                //4. CICLO FOR-EACH: Itera su ogni prodotto ricevuto dall'array 'items'
+                items.forEach(p => {
+                    //Creazione dinamica di un elemento 'div' per la card
+                    const card = document.createElement('div');
+                    
+                    //Logica di controllo scorte: trasforma la stringa in numero per il confronto
+                    const quantitaNum = parseInt(p.quantita);
+                    const isLow = quantitaNum < 25 ? 'low-stock' : '';
+                    
+                    //Assegnazione classi: serve per applicare lo stile CSS specifico (es: bordo colorato per formato)
+                    card.className = `card ${p.fonte.toLowerCase()} ${isLow}`;
+                    
+                    //Iniezione del contenuto HTML nella card usando i Template Literals (`...`)
+                    card.innerHTML = `
+                        <span class="source-tag">${p.fonte}</span>
+                        <div class="content">
+                            <span class="category">${p.categoria}</span>
+                            <h3>${p.prodotto}</h3>
+                        </div>
+                        <div class="stock-container">
+                            <span class="stock-label">${isLow ? '⚠️ SCORTA BASSA' : 'Disponibilità'}</span>
+                            <span class="stock-value">${p.quantita} pz</span>
+                        </div>
+                    `;
+                    //Aggiunta fisica della card al contenitore grid nel DOM
+                    grid.appendChild(card);
+                });
+            } catch (error) {
+                //Gestione errori: se il server è spento o il file è corrotto, avvisa l'utente
+                console.error("Errore nel caricamento:", error);
+                document.getElementById('info').innerText = "Errore di connessione al magazzino";
+            }
         }
         
-        // Eseguiamo la funzione all'apertura della pagina
-        getMovies();
+        // --- RICHIAMO DELLA FUNZIONE ---
+        //La funzione viene eseguita qui per popolare la pagina all'avvio
+        getInventory();
     </script>
 </body>
 </html>

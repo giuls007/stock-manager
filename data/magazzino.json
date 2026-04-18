@@ -1,0 +1,8 @@
+[
+  {"prodotto": "Pasta - Penne 500g", "categoria": "Pasta", "quantita": 50},
+  {"prodotto": "Passata di Pomodoro", "categoria": "Conserve", "quantita": 120},
+  {"prodotto": "Olio Extravergine 1L", "categoria": "Condimenti", "quantita": 15},
+  {"prodotto": "Farina Tipo 00 1kg", "categoria": "Farine", "quantita": 80},
+  {"prodotto": "Riso - Carnaroli 1kg", "categoria": "Riso", "quantita": 45},
+  {"prodotto": "Sale Marino 1kg", "categoria": "Condimenti", "quantita": 200}
+]

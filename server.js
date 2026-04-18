@@ -1,52 +1,67 @@
-const express = require('express'); // Carica il framework per gestire il server
-const fs = require('fs');           // Modulo nativo di Node per leggere i file (File System)
-const csv = require('csv-parser');  // Libreria esterna per convertire il formato CSV in oggetti JS
-const xml2js = require('xml2js');   // Libreria esterna per convertire l'XML in oggetti JS
+//IMPORTAZIONE DEI MODULI (Librerie esterne)
+const express = require('express'); //Framework per creare il server web e gestire le rotte
+const fs = require('fs');           //Modulo "File System" per leggere/scrivere file sul computer
+const csv = require('csv-parser');  //Estensione per tradurre i file CSV in oggetti JavaScript
+const xml2js = require('xml2js');   //Estensione per tradurre i file XML in oggetti JavaScript
 
-const app = express();
-const PORT = 3000;
+const app = express(); //Inizializzazione dell'applicazione Express
+const PORT = 5000;     //Definizione della porta su cui il server resterà in ascolto
 
-// Configura la cartella 'public' come sorgente dei file statici (HTML, CSS, Immagini)
+//MIDDLEWARE STATIC: serve per dire ad Express che tutti i file dentro la cartella 'public'
+//(come index.html e style.css) devono essere accessibili direttamente dal browser.
 app.use(express.static('public'));
 
-/**
- * Rotta API che raccoglie i dati dai 3 formati e li unisce in un unico JSON
- */
-app.get('/api/film', async (req, res) => {
+//DEFINIZIONE DELLA ROTTA API: /api/magazzino
+//Questa funzione viene richiamata quando il client (HTML) esegue la fetch().
+//Usiamo 'async' perché la lettura dei file (specialmente XML e CSV) è un'operazione asincrona.
+app.get('/api/magazzino', async (req, res) => {
     try {
-        let databaseFilm = []; // Array temporaneo che conterrà tutti i film
+        //Creiamo un contenitore vuoto (Array) dove uniremo i 18 prodotti
+        let inventarioTotale = [];
 
-        // --- GESTIONE JSON ---
-        // Leggiamo il file in modo sincrono e lo trasformiamo subito in oggetto JS
-        const datiJson = JSON.parse(fs.readFileSync('./data/film.json', 'utf8'));
-        // Aggiungiamo ogni film all'array globale aggiungendo l'etichetta del formato
-        datiJson.forEach(f => databaseFilm.push({ ...f, tipo: 'JSON' }));
+        // --- GESTIONE FILE JSON ---
+        //Leggiamo il file come testo e usiamo JSON.parse per trasformarlo in un oggetto lavorabile
+        const datiJson = JSON.parse(fs.readFileSync('./data/magazzino.json', 'utf8'));
+        //Per ogni prodotto trovato, aggiungiamo l'etichetta "JSON" per riconoscerne la provenienza
+        datiJson.forEach(p => inventarioTotale.push({ ...p, fonte: 'JSON' }));
 
-        // --- GESTIONE XML ---
-        // Leggiamo il testo grezzo del file XML
-        const datiXml = fs.readFileSync('./data/film.xml', 'utf8');
+        // --- GESTIONE FILE XML ---
+        //Leggiamo il file XML come testo grezzo
+        const datiXml = fs.readFileSync('./data/magazzino.xml', 'utf8');
+        //Creiamo un'istanza del parser XML
         const parser = new xml2js.Parser({ explicitArray: false });
-        // Trasformiamo l'XML in un oggetto JavaScript navigabile
+        //'parseStringPromise' trasforma il testo XML in un oggetto JavaScript (usiamo await per attendere la fine)
         const resultXml = await parser.parseStringPromise(datiXml);
-        // Navighiamo dentro <cineteca><film> e aggiungiamo i dati all'array
-        resultXml.cineteca.film.forEach(f => databaseFilm.push({ ...f, tipo: 'XML' }));
+        //Navighiamo nella struttura del file (magazzino -> item) e aggiungiamo la fonte "XML"
+        resultXml.magazzino.item.forEach(p => inventarioTotale.push({ ...p, fonte: 'XML' }));
 
-        // --- GESTIONE CSV ---
-        // Il CSV si legge "a pezzi" (stream) perché potrebbe essere un file enorme
-        fs.createReadStream('./data/film.csv')
-            .pipe(csv()) // Trasforma ogni riga del CSV in un oggetto
-            .on('data', (row) => databaseFilm.push({ ...row, tipo: 'CSV' }))
+        // --- GESTIONE FILE CSV ---
+        //Il CSV viene letto tramite uno "Stream" (un flusso di dati).
+        //Questo metodo è più efficiente per file che potrebbero essere molto lunghi.
+        fs.createReadStream('./data/magazzino.csv')
+            .pipe(csv()) // Trasforma ogni riga del CSV in un oggetto { prodotto, categoria, quantita }
+            .on('data', (row) => {
+                //Ogni volta che viene letta una riga, la aggiungiamo all'array con la fonte "CSV"
+                inventarioTotale.push({ ...row, fonte: 'CSV' });
+            })
             .on('end', () => {
-                // Solo quando il CSV è finito inviamo la risposta completa al browser
-                res.json(databaseFilm);
+                //CALLBACK DI CHIUSURA: Inviamo la risposta al browser solo quando 
+                //il CSV è stato letto completamente. In questo momento inventarioTotale 
+                //contiene tutti i 18 prodotti (6 JSON + 6 XML + 6 CSV).
+                res.json(inventarioTotale);
             });
 
     } catch (err) {
-        // Se un file manca o è scritto male, inviamo un errore 500
-        console.error("Errore critico:", err);
-        res.status(500).send("Errore nel caricamento dei dati");
+        //In caso di file mancanti o errori di sintassi nei file dati
+        console.error("Errore nel caricamento del magazzino:", err);
+        res.status(500).send("Errore interno del server");
     }
 });
 
-// Avvia il server sulla porta 3000
-app.listen(PORT, () => console.log(`Server attivo su http://localhost:${PORT}`));
+//AVVIO DEL SERVER
+//La funzione listen() mette il server in uno stato di attesa.
+//Da questo momento il server risponde se scrivi http://localhost:5000 nel browser.
+app.listen(PORT, () => {
+    console.log(`--- SERVER MAGAZZINO ATTIVO ---`);
+    console.log(`Endpoint API: http://localhost:${PORT}/api/magazzino`);
+});

@@ -1,0 +1,32 @@
+<magazzino>
+    <item>
+        <prodotto>Mele Golden</prodotto>
+        <categoria>Ortofrutta</categoria>
+        <quantita>150</quantita>
+    </item>
+    <item>
+        <prodotto>Pane</prodotto>
+        <categoria>Panetteria</categoria>
+        <quantita>20</quantita>
+    </item>
+    <item>
+        <prodotto>Parmigiano Reggiano</prodotto>
+        <categoria>Latticini</categoria>
+        <quantita>12</quantita>
+    </item>
+    <item>
+        <prodotto>Banane</prodotto>
+        <categoria>Ortofrutta</categoria>
+        <quantita>85</quantita>
+    </item>
+    <item>
+        <prodotto>Petto di Pollo</prodotto>
+        <categoria>Macelleria</categoria>
+        <quantita>18</quantita>
+    </item>
+    <item>
+        <prodotto>Salmone Affumicato</prodotto>
+        <categoria>Pescheria</categoria>
+        <quantita>22</quantita>
+    </item>
+</magazzino>
